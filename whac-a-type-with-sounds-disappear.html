@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>打字编程类打地鼠</title>
+<style>
+  body { background: #eee; font-family: sans-serif; text-align: center; margin: 0; padding: 0;}
+  header { display: flex; justify-content: space-between; padding: 10px; background: #ccc;}
+  #best { text-align: left; }
+  #score { text-align: right; }
+  #countdown { font-size: 24px; margin: 10px; }
+  .game-area { position: relative; width: 800px; height: 600px; margin: 20px auto; background: #90EE90; border: 3px solid #228B22; border-radius: 15px; }
+  .hole { position: absolute; background: #654321; width: 120px; height: 120px; border-radius: 50%; overflow: hidden; }
+  .char { position: absolute; top: -5px; left: 50%; transform: translateX(-50%); font-size: 32px; font-weight: bold; color: #fff; }
+  .mole, .bomb, .rabbit { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 80px;}
+  .float-text { position: absolute; font-size: 20px; font-weight: bold; color: yellow; animation: floatUp 1s ease-out;}
+  @keyframes floatUp {
+    0% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -50px); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div id="best">历史最佳: <span id="bestScore">0</span><br>玩家: <span id="bestName">无名</span></div>
+  <div id="score">当前得分: <span id="currentScore">0</span></div>
+</header>
+<div id="countdown">倒计时: <span id="timeLeft">300</span> 秒</div>
+<div class="game-area" id="gameArea"></div>
+
+<!-- 声音文件 -->
+<audio id="soundMole" src="hit_mole.mp3" preload="auto"></audio>
+<audio id="soundBomb" src="hit_bomb.mp3" preload="auto"></audio>
+<audio id="soundRabbit" src="hit_rabbit.mp3" preload="auto"></audio>
+
+<script>
+const holes = [];
+const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+let currentScore = 0;
+let timeLeft = 300;
+let timer;
+let difficulty = 2000; // 默认中等 2s
+let currentTarget = null;
+let currentHole = null;
+let bestScore = localStorage.getItem('bestScore') || 0;
+let bestName = localStorage.getItem('bestName') || '无名';
+document.getElementById('bestScore').textContent = bestScore;
+document.getElementById('bestName').textContent = bestName;
+
+// 创建随机分布的洞
+function createRandomHoles() {
+  const gameArea = document.getElementById('gameArea');
+  const holeSize = 120; // 洞的大小
+  const minDistance = 150; // 洞之间的最小距离（增加安全边距）
+  const gameWidth = 800;
+  const gameHeight = 600;
+  const positions = [];
+  
+  // 检查两个洞是否重叠
+  function isOverlapping(newX, newY, existingPositions) {
+    return existingPositions.some(pos => {
+      const distance = Math.sqrt(Math.pow(newX - pos.x, 2) + Math.pow(newY - pos.y, 2));
+      return distance < minDistance;
+    });
+  }
+  
+  // 生成不重叠的随机位置
+  let successfulPlacements = 0;
+  const maxAttempts = 1000; // 增加尝试次数
+  let totalAttempts = 0;
+  
+  while (successfulPlacements < 10 && totalAttempts < maxAttempts) { // 减少洞的数量确保不重叠
+    const x = Math.random() * (gameWidth - holeSize);
+    const y = Math.random() * (gameHeight - holeSize);
+    
+    // 确保洞不会太靠近边界
+    if (x >= 20 && y >= 20 && x <= gameWidth - holeSize - 20 && y <= gameHeight - holeSize - 20) {
+      if (!isOverlapping(x, y, positions)) {
+        positions.push({x, y});
+        
+        const hole = document.createElement('div');
+        hole.className = 'hole';
+        hole.style.left = x + 'px';
+        hole.style.top = y + 'px';
+        gameArea.appendChild(hole);
+        holes.push(hole);
+        
+        successfulPlacements++;
+      }
+    }
+    totalAttempts++;
+  }
+  
+  console.log(`成功放置了 ${successfulPlacements} 个洞，总尝试次数: ${totalAttempts}`);
+}
+
+createRandomHoles();
+
+function spawn() {
+  holes.forEach(h=>h.innerHTML='');
+  const hole = holes[Math.floor(Math.random()*holes.length)];
+  const letter = letters[Math.floor(Math.random()*letters.length)];
+  const entityType = Math.random() < 0.7 ? 'mole' : (Math.random()<0.5 ? 'bomb' : 'rabbit');
+  currentTarget = { letter, type: entityType };
+  currentHole = hole;
+  const char = document.createElement('div');
+  char.className = 'char';
+  char.textContent = letter;
+  const img = document.createElement('img');
+  img.className = entityType;
+  img.src = entityType+'.png'; // 图片文件
+  hole.appendChild(char);
+  hole.appendChild(img);
+}
+
+function startGame() {
+  currentScore = 0;
+  timeLeft = 300;
+  document.getElementById('currentScore').textContent = currentScore;
+  timer = setInterval(()=>{
+    timeLeft--;
+    document.getElementById('timeLeft').textContent = timeLeft;
+    if (timeLeft <= 0) endGame();
+  },1000);
+  spawn();
+  setInterval(spawn, difficulty);
+}
+
+function endGame() {
+  clearInterval(timer);
+  if (currentScore > bestScore) {
+    bestScore = currentScore;
+    bestName = prompt("新纪录！请输入你的名字:", "玩家");
+    localStorage.setItem('bestScore', bestScore);
+    localStorage.setItem('bestName', bestName);
+  }
+  alert("游戏结束！你的得分: " + currentScore);
+  location.reload();
+}
+
+// 播放音效的函数，支持重叠播放
+function playSound(soundId) {
+  const originalSound = document.getElementById(soundId);
+  // 克隆音频元素以支持重叠播放
+  const sound = originalSound.cloneNode();
+  sound.currentTime = 0;
+  sound.play().catch(e => console.log('音效播放失败:', e));
+}
+
+document.addEventListener('keydown', e=>{
+  if (!currentTarget) return;
+  if (e.key.toUpperCase() === currentTarget.letter) {
+    let delta = 0;
+    if (currentTarget.type === 'mole') { 
+        delta = 10; 
+        playSound('soundMole');
+    }
+    else if (currentTarget.type === 'bomb') { 
+        delta = -10; 
+        playSound('soundBomb');
+    }
+    else if (currentTarget.type === 'rabbit') { 
+        delta = -20; 
+        playSound('soundRabbit');
+    }
+    currentScore += delta;
+    document.getElementById('currentScore').textContent = currentScore;
+    
+    // 添加浮动分数
+    const ft = document.createElement('div');
+    ft.className = 'float-text';
+    ft.style.left = '50%';
+    ft.style.top = '50%';
+    ft.textContent = (delta>0?'+':'') + delta;
+    currentHole.appendChild(ft);
+    
+    // 立即清空该洞
+    setTimeout(()=>{
+      currentHole.innerHTML = '';
+      currentTarget = null;
+      currentHole = null;
+    }, 50);
+  }
+});
+startGame();
+</script>
+</body>
+</html>
