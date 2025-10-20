@@ -82,6 +82,10 @@
   color: #fff;
 }
 
+.feed-subscribe {
+  display: none;
+}
+
 @media (max-width: 960px) {
   .layout-with-sidebar {
     flex-direction: column;
