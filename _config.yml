@@ -1,0 +1,4 @@
+title: 我的博客
+description: 记录与分享
+theme: minima   # GitHub Pages 原生主题，省心
+paginate: 10
