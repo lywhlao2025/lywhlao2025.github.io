@@ -86,6 +86,22 @@
   display: none;
 }
 
+.site-footer {
+  padding: 2rem 1rem;
+  background-color: #f8f9fa;
+}
+
+.site-footer .wrapper {
+  max-width: none;
+  text-align: center;
+}
+
+.footer-copy {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
 @media (max-width: 960px) {
   .layout-with-sidebar {
     flex-direction: column;
