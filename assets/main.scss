@@ -1,0 +1,99 @@
+---
+# Only the main Sass file needs front matter (the dashes are enough)
+---
+
+@import "minima";
+
+.layout-with-sidebar {
+  display: flex;
+  align-items: flex-start;
+  gap: 2.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.layout-main .wrapper {
+  margin: 0;
+  max-width: none;
+  padding: 0;
+  width: 100%;
+}
+
+.site-sidebar {
+  flex: 0 0 260px;
+}
+
+.sidebar-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.sidebar-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 1rem;
+}
+
+.sidebar-name {
+  text-align: center;
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-title {
+  text-align: center;
+  margin: 0 0 1rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.sidebar-bio {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #4a4a4a;
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.sidebar-links a {
+  color: inherit;
+  text-decoration: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  display: inline-block;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-links a:hover,
+.sidebar-links a:focus {
+  background-color: #111;
+  color: #fff;
+}
+
+@media (max-width: 960px) {
+  .layout-with-sidebar {
+    flex-direction: column;
+    padding: 1.5rem 1rem;
+  }
+
+  .site-sidebar {
+    width: 100%;
+  }
+
+  .sidebar-card {
+    max-width: 420px;
+    margin: 0 auto;
+  }
+}

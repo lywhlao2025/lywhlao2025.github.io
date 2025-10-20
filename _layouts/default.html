@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+  <head>
+    {%- include head.html -%}
+  </head>
+
+  <body class="{{ page.layout | default: layout }}{% if page.classes %} {{ page.classes | join: " " }}{% endif %}{% if site.classes %} {{ site.classes | join: " " }}{% endif %}">
+    {%- include header.html -%}
+
+    <main class="page-content" aria-label="Content">
+      <div class="layout-with-sidebar">
+        <aside class="site-sidebar" aria-label="个人简介">
+          <div class="sidebar-card">
+            {% if site.sidebar.avatar %}
+            <img class="sidebar-avatar" src="{{ site.sidebar.avatar | relative_url }}" alt="{{ site.sidebar.name | default: site.title }}">
+            {% endif %}
+            <h2 class="sidebar-name">{{ site.sidebar.name | default: site.title }}</h2>
+            {% if site.sidebar.title %}
+            <p class="sidebar-title">{{ site.sidebar.title }}</p>
+            {% endif %}
+            {% if site.sidebar.bio %}
+            <p class="sidebar-bio">{{ site.sidebar.bio }}</p>
+            {% endif %}
+            {% if site.sidebar.links %}
+            <ul class="sidebar-links">
+              {% for link in site.sidebar.links %}
+              <li>
+                <a href="{{ link.url | relative_url }}" {% if link.new_tab %}target="_blank" rel="noopener"{% endif %}>
+                  {{ link.title }}
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+        </aside>
+        <div class="layout-main">
+          <div class="wrapper">
+            {{ content }}
+          </div>
+        </div>
+      </div>
+    </main>
+
+    {%- include footer.html -%}
+  </body>
+</html>
