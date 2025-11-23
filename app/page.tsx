@@ -16,9 +16,9 @@ export default function HomePage() {
           </div>
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-blue-300">LYWHLAO / 个人博客</p>
-            <h1 className="mt-4 text-4xl font-bold text-white">记录学习 React 与前端的旅程</h1>
+            <h1 className="mt-4 text-4xl font-bold text-white">观瀑亭</h1>
             <p className="mt-4 text-lg text-slate-200">
-              使用 Next.js + Tailwind + MDX 重构，支持静态导出，也方便以后添加交互组件。
+              欢迎来到我的个人博客！分享所见所闻所想～
             </p>
             <div className="mt-6 flex gap-4">
               <Link
